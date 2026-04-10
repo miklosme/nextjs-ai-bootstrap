@@ -8,5 +8,5 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 After finishing technical work:
 
-- Run the relevant QA scripts to validate correctness before handing off: `bun run validate:data` and `bun run typecheck`.
+- Validate correctness before handing off with `bun run typecheck`.
 - Put a commit message about this change to `.current-commit-message`. Don't care about the content, just write one line. Keep it terse and sharp, do not include a semantic prefix, and do not end with a period. The commit hook consumes and clears this file during the next normal commit attempt.
