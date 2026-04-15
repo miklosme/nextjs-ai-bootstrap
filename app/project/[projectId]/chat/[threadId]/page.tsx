@@ -50,6 +50,7 @@ export default async function ProjectChatPage({
       </Card>
       <div className="min-h-0 flex-1">
         <WorkspaceChat
+          autostart={thread.pendingResponse}
           initialMessages={thread.messages}
           projectId={projectId}
           threadId={thread.id}

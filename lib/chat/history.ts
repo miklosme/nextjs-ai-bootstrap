@@ -1,3 +1,4 @@
+import { generateId } from 'ai'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
@@ -13,6 +14,7 @@ export type ChatThreadRecord = {
   id: ChatThreadId
   createdAt: string
   updatedAt: string
+  pendingResponse: boolean
   title: string | null
   messages: FilesystemChatMessage[]
 }
@@ -144,6 +146,7 @@ async function readThreadRecord(filePath: string): Promise<ChatThreadRecord> {
     createdAt: parsed.createdAt,
     id: parsed.id as ChatThreadId,
     messages: parsed.messages as FilesystemChatMessage[],
+    pendingResponse: parsed.pendingResponse === true,
     title: typeof parsed.title === 'string' ? parsed.title : null,
     updatedAt: parsed.updatedAt,
   }
@@ -196,6 +199,7 @@ export async function createThread(projectId: string): Promise<ChatThreadRecord>
     createdAt: now,
     id: createId('chat'),
     messages: [],
+    pendingResponse: false,
     title: null,
     updatedAt: now,
   }
@@ -239,12 +243,44 @@ export async function saveThreadMessages(
   const nextThread: ChatThreadRecord = {
     ...existingThread,
     messages,
+    pendingResponse: false,
     updatedAt: new Date().toISOString(),
   }
 
   await saveThread(projectId, nextThread)
 
   return nextThread
+}
+
+export async function createThreadFromFirstMessage(
+  projectId: string,
+  text: string,
+): Promise<ChatThreadRecord> {
+  const trimmedText = collapseWhitespace(text)
+
+  if (!trimmedText) {
+    throw new Error('First message text is required.')
+  }
+
+  const now = new Date().toISOString()
+  const thread: ChatThreadRecord = {
+    createdAt: now,
+    id: createId('chat'),
+    messages: [
+      {
+        id: generateId(),
+        parts: [{ text: trimmedText, type: 'text' }],
+        role: 'user',
+      },
+    ],
+    pendingResponse: true,
+    title: null,
+    updatedAt: now,
+  }
+
+  await saveThread(projectId, thread)
+
+  return thread
 }
 
 export async function saveThreadTitle(

@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation'
 
-import { createThread, getMostRecentThreadSummary } from '@/lib/chat/history'
+import { getMostRecentThreadSummary } from '@/lib/chat/history'
 import { unlabel } from '@/lib/id'
 import { resolveProjectHostRoot } from '@/lib/projects'
 
@@ -19,7 +19,5 @@ export default async function ProjectPage({ params }: { params: Promise<{ projec
     redirect(`/project/${projectId}/chat/${unlabel(mostRecentThread.id)}`)
   }
 
-  const thread = await createThread(projectId)
-
-  redirect(`/project/${projectId}/chat/${unlabel(thread.id)}`)
+  redirect(`/project/${projectId}/new`)
 }

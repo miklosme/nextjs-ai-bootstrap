@@ -22,7 +22,7 @@ import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { RotateCcwIcon, SparklesIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type BashToolPart = Extract<FilesystemChatMessage['parts'][number], { type: 'tool-bash' }>
 
@@ -111,16 +111,19 @@ const BashToolInvocation = ({ part }: { part: BashToolPart }) => {
 }
 
 export function WorkspaceChat({
+  autostart = false,
   initialMessages,
   projectId,
   threadId,
 }: {
+  autostart?: boolean
   initialMessages: FilesystemChatMessage[]
   projectId: string
   threadId: `chat-${string}`
 }) {
   const [input, setInput] = useState('')
   const router = useRouter()
+  const hasAutostartedRef = useRef(false)
   const { error, messages, regenerate, sendMessage, status, stop } = useChat<FilesystemChatMessage>(
     {
       id: threadId,
@@ -136,6 +139,21 @@ export function WorkspaceChat({
   )
 
   const isLoading = status === 'submitted' || status === 'streaming'
+
+  useEffect(() => {
+    if (!autostart || hasAutostartedRef.current || status !== 'ready') {
+      return
+    }
+
+    const lastMessage = messages[messages.length - 1]
+
+    if (!lastMessage || lastMessage.role !== 'user') {
+      return
+    }
+
+    hasAutostartedRef.current = true
+    void regenerate({ messageId: lastMessage.id })
+  }, [autostart, messages, regenerate, status])
 
   return (
     <section className="flex min-h-0 flex-1 flex-col">

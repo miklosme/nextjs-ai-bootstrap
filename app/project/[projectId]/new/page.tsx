@@ -1,7 +1,6 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 
-import { createThread } from '@/lib/chat/history'
-import { unlabel } from '@/lib/id'
+import { NewThreadComposer } from '@/components/chat/new-thread-composer'
 import { resolveProjectHostRoot } from '@/lib/projects'
 
 export default async function NewProjectChatPage({
@@ -17,7 +16,9 @@ export default async function NewProjectChatPage({
     notFound()
   }
 
-  const thread = await createThread(projectId)
-
-  redirect(`/project/${projectId}/chat/${unlabel(thread.id)}`)
+  return (
+    <div className="flex min-h-0 flex-1 items-center justify-center">
+      <NewThreadComposer projectId={projectId} />
+    </div>
+  )
 }
