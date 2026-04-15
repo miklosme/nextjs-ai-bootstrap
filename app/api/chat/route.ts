@@ -1,16 +1,25 @@
-import { convertToModelMessages, generateId, streamText, type UIMessage } from 'ai'
+import { convertToModelMessages, generateId, stepCountIs, streamText } from 'ai'
 
+import {
+  createFilesystemTools,
+  FILESYSTEM_AGENT_SYSTEM_PROMPT,
+  type FilesystemChatMessage,
+} from '@/lib/agents/filesystem-agent'
+
+export const runtime = 'nodejs'
 export const maxDuration = 30
 
 export async function POST(request: Request) {
   try {
-    const { messages }: { messages: UIMessage[] } = await request.json()
-
+    const { messages }: { messages: FilesystemChatMessage[] } = await request.json()
+    const tools = createFilesystemTools()
+    const modelMessages = await convertToModelMessages(messages, { tools })
     const result = streamText({
       model: 'openai/gpt-5.4-mini',
-      system:
-        'You are a helpful assistant inside a Next.js starter app. Keep answers clear, practical, and concise unless the user asks for more depth.',
-      messages: await convertToModelMessages(messages),
+      stopWhen: stepCountIs(12),
+      system: FILESYSTEM_AGENT_SYSTEM_PROMPT,
+      messages: modelMessages,
+      tools,
     })
 
     return result.toUIMessageStreamResponse({

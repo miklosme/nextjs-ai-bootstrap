@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const DEFAULT_PREFIX = 'wip'
 const DEFAULT_SUFFIX = 'update project files'
@@ -93,7 +94,10 @@ export function applyPreparedCommitMessage(options: {
   return true
 }
 
-if (import.meta.main) {
+const isMainModule =
+  process.argv[1] != null && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+
+if (isMainModule) {
   const [messageFilePath, source] = process.argv.slice(2)
 
   if (!messageFilePath) {
