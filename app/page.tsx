@@ -131,7 +131,7 @@ export default function Home() {
                 <SparklesIcon />
                 <h1>Filesystem Agent</h1>
               </div>
-              <p>Bash-native agent over this repo and the example `projects/` workspaces</p>
+              <p>Bash-native agent over the mounted workspace files</p>
             </div>
             <Badge variant="secondary">openai/gpt-5.4-mini</Badge>
           </header>
@@ -149,14 +149,14 @@ export default function Home() {
           <div className="relative min-h-0 flex-1">
             <Conversation>
               {messages.length > 0 && (
-                <ConversationDownload filename="starter-ai-chat.md" messages={messages} />
+                <ConversationDownload filename="filesystem-chat.md" messages={messages} />
               )}
 
               <ConversationContent className="mx-auto w-full max-w-3xl">
                 {messages.length === 0 ? (
                   <ConversationEmptyState
                     className="min-h-[40vh]"
-                    description="Ask it to inspect the codebase, compare project files, or reason from the mounted filesystem."
+                    description="Ask it to inspect folders, compare files, or reason from the mounted workspace tree."
                     icon={<SparklesIcon className="size-5" />}
                     title="Start a filesystem conversation"
                   />
@@ -227,7 +227,7 @@ export default function Home() {
                 <PromptInputTextarea
                   disabled={isLoading}
                   onChange={(event) => setInput(event.currentTarget.value)}
-                  placeholder="Ask the agent to inspect files, trace behavior, or reason from the repo..."
+                  placeholder="Ask the agent to inspect files, compare folders, or reason from the mounted tree..."
                   rows={1}
                   value={input}
                 />

@@ -1,9 +1,10 @@
 import { InferUITools, tool, type UIMessage } from 'ai'
 import { Bash, OverlayFs } from 'just-bash'
+import path from 'node:path'
 import { z } from 'zod'
 
-const REPO_ROOT = process.cwd()
-const VIRTUAL_REPO_ROOT = '/workspace'
+const HOST_MOUNT_SOURCE_ROOT = path.join(process.cwd(), 'projects')
+const VIRTUAL_MOUNT_ROOT = '/workspace'
 const MAX_TOOL_OUTPUT_CHARS = 12_000
 
 const truncateToolText = (value: string, label: 'stdout' | 'stderr') => {
@@ -19,29 +20,27 @@ const truncateToolText = (value: string, label: 'stdout' | 'stderr') => {
 
 const createBashEnvironment = () => {
   const overlay = new OverlayFs({
-    mountPoint: VIRTUAL_REPO_ROOT,
-    root: REPO_ROOT,
+    mountPoint: VIRTUAL_MOUNT_ROOT,
+    root: HOST_MOUNT_SOURCE_ROOT,
   })
 
   return new Bash({
-    cwd: VIRTUAL_REPO_ROOT,
+    cwd: VIRTUAL_MOUNT_ROOT,
     fs: overlay,
   })
 }
 
-export const FILESYSTEM_AGENT_SYSTEM_PROMPT = `You are a filesystem-native agent inside a Next.js starter app.
-
-The repository is mounted at ${VIRTUAL_REPO_ROOT}. The gitignored examples live in ${VIRTUAL_REPO_ROOT}/projects.
+export const FILESYSTEM_AGENT_SYSTEM_PROMPT = `You are a filesystem agent.
 
 Use the bash tool as your primary way to inspect the filesystem and ground your answers in what is actually present.
 Explore before concluding. Prefer focused commands like rg, find, ls, tree, sed -n, head, tail, cat, jq, and wc instead of dumping huge files.
 
 This bash environment uses a copy-on-write overlay:
-- reads come from the real repository on disk
+- reads come from the mounted source files
 - writes are isolated to this request only
-- no bash writes persist back to the repo
+- no bash writes persist back to the mounted source on disk
 
-You may use temporary files during the current tool loop, but never claim that you changed the real repository through bash.
+You may use temporary files during the current tool loop, but never claim that you changed the underlying source files through bash.
 When you answer, cite the important paths you inspected and keep the response practical and concise unless the user asks for more depth.`
 
 export const createFilesystemTools = () => {
@@ -49,8 +48,8 @@ export const createFilesystemTools = () => {
 
   return {
     bash: tool({
-      description: `Execute bash commands against the mounted repository at ${VIRTUAL_REPO_ROOT}.
-Use this to inspect code, compare files, search with ripgrep, read JSON/Markdown, and do lightweight scratch work inside the request-local overlay.`,
+      description: `Execute bash commands against the mounted filesystem at ${VIRTUAL_MOUNT_ROOT}.
+Use this to inspect files, compare directories, search with ripgrep, read JSON or Markdown, and do lightweight scratch work inside the request-local overlay.`,
       inputSchema: z.object({
         command: z
           .string()
@@ -66,7 +65,7 @@ Use this to inspect code, compare files, search with ripgrep, read JSON/Markdown
 
         return {
           command,
-          cwd: VIRTUAL_REPO_ROOT,
+          cwd: VIRTUAL_MOUNT_ROOT,
           exitCode: result.exitCode,
           stderr: stderr.text,
           stderrTruncated: stderr.truncated,
