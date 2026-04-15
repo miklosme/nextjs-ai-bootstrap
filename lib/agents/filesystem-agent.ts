@@ -1,9 +1,7 @@
 import { InferUITools, tool, type UIMessage } from 'ai'
 import { Bash, OverlayFs } from 'just-bash'
-import path from 'node:path'
 import { z } from 'zod'
 
-const HOST_MOUNT_SOURCE_ROOT = path.join(process.cwd(), 'projects')
 const VIRTUAL_MOUNT_ROOT = '/workspace'
 const MAX_TOOL_OUTPUT_CHARS = 12_000
 
@@ -18,10 +16,10 @@ const truncateToolText = (value: string, label: 'stdout' | 'stderr') => {
   }
 }
 
-const createBashEnvironment = () => {
+const createBashEnvironment = (projectRoot: string) => {
   const overlay = new OverlayFs({
     mountPoint: VIRTUAL_MOUNT_ROOT,
-    root: HOST_MOUNT_SOURCE_ROOT,
+    root: projectRoot,
   })
 
   return new Bash({
@@ -31,6 +29,10 @@ const createBashEnvironment = () => {
 }
 
 export const FILESYSTEM_AGENT_SYSTEM_PROMPT = `You are a filesystem agent.
+
+Only the selected project is mounted into your environment.
+The mounted project root is /workspace.
+Chat history files may exist under /workspace/.history.
 
 Use the bash tool as your primary way to inspect the filesystem and ground your answers in what is actually present.
 Explore before concluding. Prefer focused commands like rg, find, ls, tree, sed -n, head, tail, cat, jq, and wc instead of dumping huge files.
@@ -43,8 +45,8 @@ This bash environment uses a copy-on-write overlay:
 You may use temporary files during the current tool loop, but never claim that you changed the underlying source files through bash.
 When you answer, cite the important paths you inspected and keep the response practical and concise unless the user asks for more depth.`
 
-export const createFilesystemTools = () => {
-  const bash = createBashEnvironment()
+export const createFilesystemTools = (projectRoot: string) => {
+  const bash = createBashEnvironment(projectRoot)
 
   return {
     bash: tool({
@@ -77,8 +79,6 @@ Use this to inspect files, compare directories, search with ripgrep, read JSON o
   }
 }
 
-export type FilesystemChatMessage = UIMessage<
-  unknown,
-  never,
-  InferUITools<ReturnType<typeof createFilesystemTools>>
->
+type FilesystemTools = ReturnType<typeof createFilesystemTools>
+
+export type FilesystemChatMessage = UIMessage<unknown, never, InferUITools<FilesystemTools>>
