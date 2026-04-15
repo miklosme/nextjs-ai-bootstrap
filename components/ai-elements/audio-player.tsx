@@ -32,7 +32,7 @@ export const AudioPlayer = ({ children, style, ...props }: AudioPlayerProps) => 
         '--media-control-background': 'transparent',
         '--media-control-hover-background': 'var(--color-accent)',
         '--media-control-padding': '0',
-        '--media-font': 'var(--font-sans)',
+        '--media-font': 'var(--font-geist-sans)',
         '--media-font-size': '10px',
         '--media-icon-color': 'currentColor',
         '--media-preview-time-background': 'var(--color-background)',
