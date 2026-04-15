@@ -20,13 +20,7 @@ import {
 } from '@/components/ui/sidebar'
 import type { ChatThreadSummary } from '@/lib/chat/history'
 import { unlabel } from '@/lib/id'
-import { Clock3Icon, FolderIcon, HistoryIcon, MessageSquarePlusIcon } from 'lucide-react'
-
-const formatUpdatedAt = (value: string) =>
-  new Intl.DateTimeFormat('en', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(value))
+import { FolderIcon, HistoryIcon, MessageSquarePlusIcon } from 'lucide-react'
 
 export function ProjectSidebar({
   projectId,
@@ -74,23 +68,20 @@ export function ProjectSidebar({
 
                   return (
                     <SidebarMenuItem key={thread.id}>
-                      <SidebarMenuButton asChild isActive={isActive}>
-                        <Link
-                          className="flex min-w-0 flex-col items-start gap-1 py-3"
-                          href={threadPath}
-                        >
+                      <SidebarMenuButton
+                        asChild
+                        className="h-auto items-start py-2"
+                        isActive={isActive}
+                      >
+                        <Link className="flex min-w-0 flex-col items-start gap-1" href={threadPath}>
                           <span
                             className={
                               thread.titleState.kind === 'empty'
-                                ? 'text-muted-foreground truncate text-sm'
-                                : 'truncate text-sm'
+                                ? 'text-muted-foreground block w-full truncate text-sm'
+                                : 'block w-full truncate text-sm'
                             }
                           >
                             {thread.titleState.text}
-                          </span>
-                          <span className="text-muted-foreground flex items-center gap-1 text-xs">
-                            <Clock3Icon data-icon="inline-start" />
-                            {formatUpdatedAt(thread.updatedAt)}
                           </span>
                         </Link>
                       </SidebarMenuButton>
