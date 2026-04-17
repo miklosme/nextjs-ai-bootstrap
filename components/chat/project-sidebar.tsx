@@ -35,14 +35,13 @@ export function ProjectSidebar({
   const activeThreadId = params.threadId
 
   return (
-    <Sidebar collapsible="offcanvas" side="right">
+    <Sidebar collapsible="offcanvas" side="left">
       <SidebarHeader>
         <div className="flex flex-col gap-1 px-2 py-1">
           <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium uppercase">
-            <FolderIcon data-icon="inline-start" />
-            Project
+            <FolderIcon data-icon="inline-start" className="size-4" />
+            <span className="truncate text-xs font-medium">{projectId}</span>
           </div>
-          <p className="truncate text-sm font-medium">{projectId}</p>
         </div>
         <Button asChild className="w-full" size="sm">
           <Link href={`/project/${projectId}/new`}>

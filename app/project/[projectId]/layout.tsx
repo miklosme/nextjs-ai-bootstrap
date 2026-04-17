@@ -32,17 +32,23 @@ export default async function ProjectLayout({
   const recentThreads = await listThreadSummaries(projectId, 1, 30)
 
   return (
-    <SidebarProvider defaultOpen>
+    <SidebarProvider defaultOpen={false}>
+      <ProjectSidebar
+        projectId={projectId}
+        recentThreads={recentThreads.threads}
+        totalThreads={recentThreads.totalThreads}
+      />
       <SidebarInset>
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <header className="bg-background/90 sticky top-0 z-10 flex shrink-0 items-center gap-3 border-b px-4 py-3 backdrop-blur">
+            <SidebarTrigger />
             <div className="min-w-0 flex-1">
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
                       <Link className="flex min-w-0 items-center gap-2" href="/">
-                        <FolderIcon data-icon="inline-start" />
+                        {/* <FolderIcon data-icon="inline-start" /> */}
                         <span className="truncate">Projects</span>
                       </Link>
                     </BreadcrumbLink>
@@ -56,17 +62,11 @@ export default async function ProjectLayout({
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
-            <SidebarTrigger />
           </header>
 
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-4">{children}</div>
         </div>
       </SidebarInset>
-      <ProjectSidebar
-        projectId={projectId}
-        recentThreads={recentThreads.threads}
-        totalThreads={recentThreads.totalThreads}
-      />
     </SidebarProvider>
   )
 }

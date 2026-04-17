@@ -38,11 +38,8 @@ export default async function Home() {
         {projects.map((project) => (
           <Card className="flex flex-col" key={project.id}>
             <CardHeader className="flex flex-col gap-3">
-              <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium uppercase">
-                <FolderIcon data-icon="inline-start" />
-                Project
-              </div>
               <div className="flex flex-col gap-1">
+                <FolderIcon data-icon="inline-start" />
                 <CardTitle>{project.id}</CardTitle>
                 <CardDescription>
                   {project.threadCount === 0
