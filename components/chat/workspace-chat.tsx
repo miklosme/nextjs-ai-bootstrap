@@ -168,8 +168,8 @@ export function WorkspaceChat({
           </div>
         )}
 
-        <div className="relative min-h-0 flex-1 overflow-hidden">
-          <Conversation>
+        <div className="relative flex min-h-0 flex-1 overflow-hidden">
+          <Conversation className="h-full">
             {messages.length > 0 && (
               <ConversationDownload filename={`${unlabel(threadId)}.md`} messages={messages} />
             )}
