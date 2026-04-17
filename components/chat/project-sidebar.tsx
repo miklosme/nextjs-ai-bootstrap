@@ -51,7 +51,7 @@ export function ProjectSidebar({
         </Button>
       </SidebarHeader>
 
-      <SidebarSeparator />
+      <SidebarSeparator className="ml-0" />
 
       <SidebarContent>
         <SidebarGroup>
