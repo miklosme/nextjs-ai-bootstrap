@@ -1,4 +1,12 @@
 import { ProjectSidebar } from '@/components/chat/project-sidebar'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { listThreadSummaries } from '@/lib/chat/history'
 import { resolveProjectHostRoot } from '@/lib/projects'
@@ -26,20 +34,32 @@ export default async function ProjectLayout({
   return (
     <SidebarProvider defaultOpen>
       <SidebarInset>
-        <div className="flex min-h-screen flex-col">
-          <header className="bg-background/90 sticky top-0 z-10 flex items-center gap-3 border-b px-4 py-3 backdrop-blur">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <header className="bg-background/90 sticky top-0 z-10 flex shrink-0 items-center gap-3 border-b px-4 py-3 backdrop-blur">
             <div className="min-w-0 flex-1">
-              <div className="flex flex-row truncate text-sm font-medium">
-                <Link className="flex flex-row gap-2 hover:underline" href="/">
-                  <FolderIcon className="size-4" data-icon="inline-start" /> Projects
-                </Link>{' '}
-                / {projectId}
-              </div>
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink asChild>
+                      <Link className="flex min-w-0 items-center gap-2" href="/">
+                        <FolderIcon data-icon="inline-start" />
+                        <span className="truncate">Projects</span>
+                      </Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem className="min-w-0">
+                    <BreadcrumbPage className="block max-w-full truncate">
+                      {projectId}
+                    </BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
             </div>
             <SidebarTrigger />
           </header>
 
-          <div className="flex min-h-0 flex-1 flex-col p-4">{children}</div>
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-4">{children}</div>
         </div>
       </SidebarInset>
       <ProjectSidebar

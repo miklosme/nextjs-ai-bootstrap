@@ -17,8 +17,10 @@ export default async function NewProjectChatPage({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 items-center justify-center">
-      <NewThreadComposer projectId={projectId} />
+    <div className="flex min-h-0 flex-1 overflow-y-auto">
+      <div className="flex w-full flex-1 items-center justify-center py-4">
+        <NewThreadComposer projectId={projectId} />
+      </div>
     </div>
   )
 }

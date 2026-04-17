@@ -156,10 +156,10 @@ export function WorkspaceChat({
   }, [autostart, messages, regenerate, status])
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col">
+    <section className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border">
         {error && (
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4">
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b p-4">
             <p className="text-destructive">Something went wrong while generating a reply.</p>
             <Button onClick={() => regenerate()} size="sm" type="button" variant="outline">
               <RotateCcwIcon data-icon="inline-start" />
@@ -168,7 +168,7 @@ export function WorkspaceChat({
           </div>
         )}
 
-        <div className="relative min-h-0 flex-1">
+        <div className="relative min-h-0 flex-1 overflow-hidden">
           <Conversation>
             {messages.length > 0 && (
               <ConversationDownload filename={`${unlabel(threadId)}.md`} messages={messages} />
@@ -232,7 +232,7 @@ export function WorkspaceChat({
           </Conversation>
         </div>
 
-        <div className="border-t p-4">
+        <div className="shrink-0 border-t p-4">
           <div className="mx-auto w-full max-w-3xl">
             <PromptInput
               onSubmit={async (message) => {
